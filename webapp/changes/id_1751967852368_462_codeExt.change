@@ -1,0 +1,22 @@
+{
+  "changeType": "codeExt",
+  "reference": "customer.custom.scm.ewm.picklistpapers1",
+  "namespace": "apps/customer.custom.scm.ewm.picklistpapers1/changes/",
+  "projectId": "customer.custom.scm.ewm.picklistpapers1",
+  "moduleName": "customer/custom/scm/ewm/picklistpapers1/changes/coding/HeaderControllerExt",
+  "support": {
+    "generator": "rta.service.ControllerExtension"
+  },
+  "originalLanguage": "EN",
+  "layer": "CUSTOMER_BASE",
+  "fileType": "change",
+  "fileName": "id_1751967852368_462_codeExt",
+  "content": {
+    "codeRef": "coding/HeaderControllerExt.js"
+  },
+  "texts": {},
+  "selector": {
+    "controllerName": "sap.suite.ui.generic.template.ListReport.view.ListReport"
+  },
+  "creation": "2025-07-08T09:44:12.369Z"
+}

@@ -1,0 +1,12 @@
+<!-- Use stable and unique IDs!-->
+<core:FragmentDefinition xmlns:core='sap.ui.core' xmlns='sap.m'>
+<Button id="destinationBinScan" icon="sap-icon://bar-code"
+	press=".extension.customer.custom.scm.ewm.picklistpapers1.detailControllerExt.onDestinationBinScanPress" visible="{= ${TOSTAT_TEXT} === 'Open'}"></Button>
+    <core:Icon id="destinationBinInfo"
+			src="sap-icon://hint"
+			press=".extension.customer.custom.scm.ewm.picklistpapers1.detailControllerExt.onDestinationBinInfoPress"
+			class="size1"
+			width="15%"
+			color="#031E48" visible="{= ${TOSTAT_TEXT} === 'Open'}">
+		</core:Icon>
+</core:FragmentDefinition>

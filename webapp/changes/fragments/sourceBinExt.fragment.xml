@@ -1,0 +1,11 @@
+<!-- Use stable and unique IDs!-->
+<core:FragmentDefinition xmlns:core='sap.ui.core' xmlns='sap.m'>
+    <!--  add your xml here -->
+        <core:Icon id="storageBinInfo"
+			src="sap-icon://hint"
+			press=".extension.customer.custom.scm.ewm.picklistpapers1.detailControllerExt.onStorageBinInfoPress"
+			class="size1"
+			width="15%"
+			color="#031E48"  visible="{= ${TOSTAT_TEXT} === 'Open'}">
+		</core:Icon>
+</core:FragmentDefinition>

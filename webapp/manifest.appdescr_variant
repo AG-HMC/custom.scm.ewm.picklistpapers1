@@ -1,0 +1,60 @@
+{
+  "fileName": "manifest",
+  "layer": "CUSTOMER_BASE",
+  "fileType": "appdescr_variant",
+  "reference": "scm.ewm.picklistpapers1",
+  "id": "customer.custom.scm.ewm.picklistpapers1",
+  "namespace": "apps/scm.ewm.picklistpapers1/appVariants/customer.custom.scm.ewm.picklistpapers1/",
+  "version": "0.1.0",
+  "content": [
+    {
+    "changeType": "appdescr_ui5_addNewModelEnhanceWith",
+    "content": {
+        "modelId": "i18n"
+    },
+    "texts": {
+        "i18n": "i18n/i18n.properties"
+    }
+},
+    {
+    "changeType": "appdescr_ui5_addNewModelEnhanceWith",
+    "content": {
+        "modelId": "@i18n"
+    },
+    "texts": {
+        "i18n": "i18n/i18n.properties"
+    }
+},
+    {
+    "changeType": "appdescr_ui5_addNewModelEnhanceWith",
+    "content": {
+        "modelId": "i18n|sap.suite.ui.generic.template.ListReport|WarehouseTaskSet"
+    },
+    "texts": {
+        "i18n": "i18n/ListReport/WarehouseTaskSet/i18n.properties"
+    }
+},
+    {
+    "changeType": "appdescr_ui5_addNewModelEnhanceWith",
+    "content": {
+        "modelId": "i18n|sap.suite.ui.generic.template.ObjectPage|WarehouseTaskSet"
+    },
+    "texts": {
+        "i18n": "i18n/ObjectPage/WarehouseTaskSet/i18n.properties"
+    }
+},
+    {
+    "changeType": "appdescr_ui5_setMinUI5Version",
+    "content": {
+        "minUI5Version": "1.120.23"
+    }
+},
+    {
+      "changeType": "appdescr_app_setTitle",
+      "content": {},
+      "texts": {
+        "i18n": "i18n/i18n.properties"
+      }
+    }
+  ]
+}

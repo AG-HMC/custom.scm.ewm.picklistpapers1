@@ -1,0 +1,30 @@
+{
+  "changeType": "addXML",
+  "reference": "customer.custom.scm.ewm.picklistpapers1",
+  "namespace": "apps/customer.custom.scm.ewm.picklistpapers1/changes/",
+  "projectId": "customer.custom.scm.ewm.picklistpapers1",
+  "packageName": "$TMP",
+  "moduleName": "customer/custom/scm/ewm/picklistpapers1/changes/fragments/destinationBinExt.fragment.xml",
+  "support": {
+    "generator": "@sap-ux/control-property-editor",
+    "command": "addXML",
+    "sapui5Version": "1.120.23"
+  },
+  "originalLanguage": "EN",
+  "layer": "CUSTOMER_BASE",
+  "fileType": "change",
+  "fileName": "id_1751958953982_408_addXML",
+  "content": {
+    "targetAggregation": "fields",
+    "index": 2,
+    "fragmentPath": "fragments/destinationBinExt.fragment.xml"
+  },
+  "texts": {},
+  "selector": {
+    "id": "scm.ewm.picklistpapers1::sap.suite.ui.generic.template.ObjectPage.view.Details::WarehouseTaskSet--confirmation-section--confirmation-form--scm.ewm.picklistpapers1::sap.suite.ui.generic.template.ObjectPage.view.Details::WarehouseTaskSet--confirmation-section--dest-bin-label--FE",
+    "idIsLocal": false
+  },
+  "dependentSelector": {},
+  "jsOnly": false,
+  "creation": "2025-07-08T07:15:58.844Z"
+}

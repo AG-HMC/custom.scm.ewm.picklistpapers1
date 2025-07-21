@@ -1,0 +1,29 @@
+{
+  "changeType": "propertyChange",
+  "reference": "customer.custom.scm.ewm.picklistpapers1",
+  "namespace": "apps/customer.custom.scm.ewm.picklistpapers1/changes/",
+  "creation": "2025-07-17T07:06:29.245Z",
+  "projectId": "customer.custom.scm.ewm.picklistpapers1",
+  "packageName": "$TMP",
+  "support": {
+    "generator": "@sap-ux/control-property-editor",
+    "sapui5Version": "1.120.23",
+    "command": "property"
+  },
+  "originalLanguage": "EN",
+  "layer": "CUSTOMER_BASE",
+  "fileType": "change",
+  "fileName": "id_1752735989139_337_propertyChange",
+  "content": {
+    "property": "color",
+    "newValue": "#0000ff"
+  },
+  "texts": {},
+  "selector": {
+    "id": "scm.ewm.picklistpapers1::sap.suite.ui.generic.template.ObjectPage.view.Details::WarehouseTaskSet--confirmation-section--customer.custom.scm.ewm.picklistpapers1.storageBinInfo",
+    "type": "sap.ui.core.Icon",
+    "idIsLocal": false
+  },
+  "dependentSelector": {},
+  "jsOnly": false
+}
