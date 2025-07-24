@@ -11,52 +11,15 @@ sap.ui.define(
     ) {
         'use strict';
         return ControllerExtension.extend("customer.custom.scm.ewm.picklistpapers1.HeaderControllerExt", {
-            // metadata: {
-            // 	// extension can declare the public methods
-            // 	// in general methods that start with "_" are private
-            // 	methods: {
-            // 		publicMethod: {
-            // 			public: true /*default*/ ,
-            // 			final: false /*default*/ ,
-            // 			overrideExecution: OverrideExecution.Instead /*default*/
-            // 		},
-            // 		finalPublicMethod: {
-            // 			final: true
-            // 		},
-            // 		onMyHook: {
-            // 			public: true /*default*/ ,
-            // 			final: false /*default*/ ,
-            // 			overrideExecution: OverrideExecution.After
-            // 		},
-            // 		couldBePrivate: {
-            // 			public: false
-            // 		}
-            // 	}
-            // },
-            // // adding a private method, only accessible from this controller extension
-            // _privateMethod: function() {},
-            // // adding a public method, might be called from or overridden by other controller extensions as well
-            // publicMethod: function() {},
-            // // adding final public method, might be called from, but not overridden by other controller extensions as well
-            // finalPublicMethod: function() {},
-            // // adding a hook method, might be called by or overridden from other controller extensions
-            // // override these method does not replace the implementation, but executes after the original method
-            // onMyHook: function() {},
-            // // method public per default, but made private via metadata
-            // couldBePrivate: function() {},
-            // // this section allows to extend lifecycle hooks or override public methods of the base controller
-            // override: {
-            // 	/**
-            // 	 * Called when a controller is instantiated and its View controls (if available) are already created.
-            // 	 * Can be used to modify the View before it is displayed, to bind event handlers and do other one-time initialization.
-            // 	 * @memberOf customer.custom.scm.ewm.picklistpapers1.HeaderControllerExt
-            // 	 */
+
             override: {
+                // Runs after the UI is rendered
                 onAfterRendering: function() {
                     var oBundle = this.getView().getModel("i18n").getResourceBundle();
+                    // Set task type title based on i18n
                     var sTaskType = "Picking"; // or "Packing" – dynamically determined
                     var sTitle = oBundle.getText("customer.custom.scm.ewm.picklistpapers1_sap.app.title", [sTaskType]);
-                    // this.getView().byId("yourPageId").setTitle(sTitle);
+
                     let match = window.location.href.match(/appName=([^&]+)/);
                     let appName = match ? match[1] : null;
                     if (appName === 'Putaway')
@@ -64,9 +27,7 @@ sap.ui.define(
                     else
                         cBValue = '2';
                     if (this.getView().byId("scm.ewm.picklistpapers1::sap.suite.ui.generic.template.ListReport.view.ListReport::WarehouseTaskSet--listReportFilter-filterItemControlFG1-WarehouseProcessCategory")) {
-                        // Putaway
-                        // this.getView().byId("scm.ewm.picklistpapers1::sap.suite.ui.generic.template.ListReport.view.ListReport::WarehouseTaskSet--listReportFilter-filterItemControlFG1-WarehouseProcessCategory").setSelectedKeys("1");
-                        // picking
+
                         this.getView().byId("scm.ewm.picklistpapers1::sap.suite.ui.generic.template.ListReport.view.ListReport::WarehouseTaskSet--listReportFilter-filterItemControlFG1-WarehouseProcessCategory").setSelectedKeys(cBValue);
                         var filterList = this.getView().byId("scm.ewm.picklistpapers1::sap.suite.ui.generic.template.ListReport.view.ListReport::WarehouseTaskSet--listReportFilter").getAllFilterItems();
                         filterList.filter(filterItem => filterItem.getProperty("name") === "Electronics");
@@ -76,18 +37,6 @@ sap.ui.define(
                             }
                         });
                     } else {
-                        // sap.ui.getCore().byId("scm.ewm.picklistpapers1::sap.suite.ui.generic.template.ListReport.view.ListReport::WarehouseTaskSet").addEventDelegate({
-                        //     onAfterRendering: function () {
-                        //         sap.ui.getCore().byId("scm.ewm.picklistpapers1::sap.suite.ui.generic.template.ListReport.view.ListReport::WarehouseTaskSet--listReportFilter-filterItemControlFG1-WarehouseProcessCategory").setSelectedKeys("2");
-                        //         var filterList = sap.ui.getCore().byId("scm.ewm.picklistpapers1::sap.suite.ui.generic.template.ListReport.view.ListReport::WarehouseTaskSet--listReportFilter").getAllFilterItems();
-                        //         filterList.filter(filterItem => filterItem.getProperty("name") === "Electronics");
-                        //         filterList.forEach(filterItem => {
-                        //             if (filterItem.getProperty("name") !== "EWMWarehouse") {
-                        //                 filterItem.setVisibleInFilterBar(false);
-                        //             }
-                        //           }); 
-                        //     }.bind(this)
-                        // })
 
                         var that = this;
 
@@ -115,6 +64,22 @@ sap.ui.define(
                                 });
                                 sap.ui.getCore().byId("scm.ewm.picklistpapers1::sap.suite.ui.generic.template.ListReport.view.ListReport::WarehouseTaskSet--listReportFilter").getParent().getParent().getContent().attachBeforeRebindTable(that.onBeforeRebindTableExtension, that)
                                 that._fetchDefaultWH.bind(that)();
+                                var oInput = sap.ui.getCore().byId("scm.ewm.picklistpapers1::sap.suite.ui.generic.template.ListReport.view.ListReport::WarehouseTaskSet--listReportFilter-filterItemControl_BASIC-EWMWarehouse");
+                                if (oInput) {
+                                    oInput.attachChange(function() {
+                                        let match = window.location.href.match(/Assign=([^&]+)/);
+                                        let assign = match ? match[1] : null;
+                                        if (assign === "Me")
+                                            that._fetchWHOrderForResouce.bind(that)();
+                                    }.bind(this));
+                                    oInput.attachSubmit(function() {
+                                        let match = window.location.href.match(/Assign=([^&]+)/);
+                                        let assign = match ? match[1] : null;
+                                        if (assign === "Me")
+                                            that._fetchWHOrderForResouce.bind(that)();
+                                    }.bind(this));
+                                }
+
                             } else if (retries > 0) {
                                 // Retry after a short delay
                                 setTimeout(function() {
@@ -129,6 +94,7 @@ sap.ui.define(
                     }
                 }
             },
+
             _fetchDefaultWH: function() {
                 var sUrl = "/sap/opu/odata/UI2/INTEROP/";
                 var sPath = "PersContainers(category='P',id='sap.ushell.UserDefaultParameter')?$expand=PersContainerItems";
@@ -147,16 +113,12 @@ sap.ui.define(
                             });
 
                             if (warehouseItem) {
-                                // var oEWMWarehouse = sap.ui.getCore().byId("scm.ewm.picklistpapers1::sap.suite.ui.generic.template.ListReport.view.ListReport::WarehouseTaskSet--listReportFilter-filterItemControl_BASIC-EWMWarehouse");
-                                // oEWMWarehouse.setValue(JSON.parse(warehouseItem.value).value);
-                                // that.onSearch();
-
 
                                 var sFilterString = JSON.stringify({
                                     EWMWarehouse: JSON.parse(warehouseItem.value).value
                                 });
                                 oSmartFilterBar.setFilterDataAsString(sFilterString);
-                                // sap.ui.getCore().byId("scm.ewm.picklistpapers1::sap.suite.ui.generic.template.ListReport.view.ListReport::WarehouseTaskSet--listReportFilter-btnGo").firePress();
+
 
                             }
 
@@ -176,9 +138,18 @@ sap.ui.define(
             },
 
             _fetchWHOrderForResouce: function() {
-                var oResource = sap.ushell.Container.getService("UserInfo").getId();
-                var sUrl = "/sap/opu/odata/sap/ZSCM_PUTAWAY_SRV/FetchWHOrderList" +
-                    "?$filter=" + encodeURIComponent("ExecutingResource eq '" + oResource + "'");
+                let match = window.location.href.match(/appName=([^&]+)/);
+                let appName = match ? match[1] : null;
+                var oSmartFilterBar = sap.ui.getCore().byId("scm.ewm.picklistpapers1::sap.suite.ui.generic.template.ListReport.view.ListReport::WarehouseTaskSet--listReportFilter");
+                var oResource = sap.ushell.Container.getService("UserInfo").getId(),
+                    oWareHouse = oSmartFilterBar.getFilterData().EWMWarehouse,
+                    oProcessCategory = "";
+                if (appName === 'Putaway')
+                    oProcessCategory = '1';
+                else
+                    oProcessCategory = '2';
+                // var sUrl = "/sap/opu/odata/sap/ZSCM_PUTAWAY_SRV/FetchWHOrderList(" + encodeURIComponent("p_ExecutingResource eq '" + oResource + "',p_WarehouseNumber eq '"+ oWareHouse +"',p_ProcessCategory eq '" + oProcessCategory +"'")+")";
+                var sUrl = "/sap/opu/odata/sap/ZSCM_PUTAWAY_SRV/FetchWHOrderList?$filter=ExecutingResource eq '" + oResource + "' and EWMWarehouse eq '" + oWareHouse + "' and WarehouseProcessCategory eq '" + oProcessCategory + "'";
                 $.ajax({
                     url: sUrl,
                     method: "GET",
@@ -188,9 +159,35 @@ sap.ui.define(
                     success: function(data) {
                         var oSmartFilterBar = sap.ui.getCore().byId("scm.ewm.picklistpapers1::sap.suite.ui.generic.template.ListReport.view.ListReport::WarehouseTaskSet--listReportFilter");
                         var results = data.d.results,
-                            filterObj = {};
+                            filterObj = oSmartFilterBar.getFilterData();
                         var warehouseOrders = results.map(item => item.WarehouseOrder);
-
+                        delete filterObj.WarehouseOrder;
+                        if (!filterObj.WarehouseTaskStatus) {
+                            filterObj.WarehouseTaskStatus = {
+                                items: [{
+                                    key: '',
+                                    text: 'Open',
+                                    length: 1,
+                                    value: null
+                                }]
+                            }
+                        }
+                        if (!filterObj.WarehouseProcessCategory) {
+                            let match = window.location.href.match(/appName=([^&]+)/);
+                            let appName = match ? match[1] : null;
+                            if (appName === 'Putaway')
+                                var key = '1';
+                            else
+                                key = '2';
+                            filterObj.WarehouseProcessCategory = {
+                                items: [{
+                                    key: key,
+                                    text: appName,
+                                    length: 1,
+                                    value: null
+                                }]
+                            }
+                        }
                         var warehouseOrderRanges = warehouseOrders.map(order => ({
                             exclude: false,
                             keyField: "WarehouseOrder",
@@ -208,15 +205,15 @@ sap.ui.define(
                                 value: null
                             }
                         var sFilterString = JSON.stringify(filterObj);
-
+                        oSmartFilterBar.clear();
                         oSmartFilterBar.setFilterDataAsString(sFilterString);
                         if (oSmartFilterBar.getFilterData().EWMWarehouse)
                             sap.ui.getCore().byId("scm.ewm.picklistpapers1::sap.suite.ui.generic.template.ListReport.view.ListReport::WarehouseTaskSet--listReportFilter-btnGo").firePress();
 
                         var filterId = "scm.ewm.picklistpapers1::sap.suite.ui.generic.template.ListReport.view.ListReport::WarehouseTaskSet--listReportFilter";
                         var aFilterItems = sap.ui.getCore().byId(filterId).getAllFilterItems();
-                        if(warehouseOrders.length > 0)
-                        aFilterItems.forEach(function(filterItem) {
+                        if (warehouseOrders.length > 0)
+                            aFilterItems.forEach(function(filterItem) {
                                 if (filterItem.getName() === "WarehouseOrder") {
                                     filterItem.setVisibleInFilterBar(true);
                                 }
@@ -337,36 +334,35 @@ sap.ui.define(
             },
 
             _validateInputValue: function(source, text) {
-                // const obj = this._oComponent.getModel("globalDataModel").getData();
 
                 // Mapping of scan sources to paths and fields
                 const filterConfig = {
                     'PROD': {
-                        path: "/ZEWM_I_ProductVH",
+                        path: "/ZSCM_I_ProductVH",
                         key: "Product",
                         filterKey: "Product",
                         additionalFilters: ["WarehouseNumber"]
                     },
                     'DSB': {
-                        path: "/ZEWM_I_StorageBinVH",
+                        path: "/ZSCM_I_StorageBinVH",
                         key: "StorageBin",
                         filterKey: "StorageBin",
                         additionalFilters: ["WarehouseNumber"]
                     },
                     'HU': {
-                        path: "/ZEWM_I_HandlingUnitTypeVH",
+                        path: "/ZSCM_I_HandlingUnitTypeVH",
                         key: "HandlingUnitType",
                         filterKey: "SourceHandlingUnit",
                         additionalFilters: ["WarehouseNumber"]
                     },
                     'BATCH': {
-                        path: "/ZEWM_I_PhysStkBatchVH",
+                        path: "/ZSCM_I_PhysStkBatchVH",
                         key: "Batch",
                         filterKey: "Batch",
                         additionalFilters: ["WarehouseNumber"]
                     },
                     'DST': {
-                        path: "/ZEWM_I_StorageTypeVH",
+                        path: "/ZSCM_I_StorageTypeVH",
                         key: "StorageType",
                         filterKey: "StorageType",
                         additionalFilters: ["WarehouseNumber"]
@@ -447,17 +443,15 @@ sap.ui.define(
                             // oField.setValue(text);
 
                             let SourceStorageBin = {
-                                items: [
-                                  {
+                                items: [{
                                     key: text,
                                     text: text
-                                  }
-                                ],
+                                }],
                                 ranges: [],
                                 value: null
-                              };
-                              filterData.SourceStorageBin = SourceStorageBin;
-                              oSmartFilterBar.setFilterData(filterData);
+                            };
+                            filterData.SourceStorageBin = SourceStorageBin;
+                            oSmartFilterBar.setFilterData(filterData);
 
                             aFilterItems.forEach(function(filterItem) {
                                 if (filterItem.getName() === "StorageBin") {
@@ -478,17 +472,15 @@ sap.ui.define(
                             // oField.setValue(text);
 
                             let SourceStorageType = {
-                                items: [
-                                  {
+                                items: [{
                                     key: text,
                                     text: text
-                                  }
-                                ],
+                                }],
                                 ranges: [],
                                 value: null
-                              };
-                              filterData.SourceStorageType = SourceStorageType;
-                              oSmartFilterBar.setFilterData(filterData);
+                            };
+                            filterData.SourceStorageType = SourceStorageType;
+                            oSmartFilterBar.setFilterData(filterData);
 
                             aFilterItems.forEach(function(filterItem) {
                                 if (filterItem.getName() === "StorageType") {
@@ -508,17 +500,15 @@ sap.ui.define(
 
                             // oField.setValue(text);
                             let Batch = {
-                                items: [
-                                  {
+                                items: [{
                                     key: text,
                                     text: text
-                                  }
-                                ],
+                                }],
                                 ranges: [],
                                 value: null
-                              };
-                              filterData.Batch = Batch;
-                              oSmartFilterBar.setFilterData(filterData);
+                            };
+                            filterData.Batch = Batch;
+                            oSmartFilterBar.setFilterData(filterData);
                             aFilterItems.forEach(function(filterItem) {
                                 if (filterItem.getName() === "Batch") {
                                     filterItem.setVisibleInFilterBar(true);
@@ -528,27 +518,25 @@ sap.ui.define(
                         case "SourceHandlingUnit":
                             id = id + "SourceHandlingUnit";
                             if (this.getView().byId(id)) {
-                            //     var oField = this.getView().byId(id);
+                                //     var oField = this.getView().byId(id);
                                 var aFilterItems = this.getView().byId(filterId).getAllFilterItems();
                             } else {
-                            //     oField = sap.ui.getCore().byId(id);
+                                //     oField = sap.ui.getCore().byId(id);
                                 var aFilterItems = sap.ui.getCore().byId(filterId).getAllFilterItems();
                             }
 
                             // oField.setValue(text);
-                            
-let SourceHandlingUnit = {
-    items: [
-      {
-        key: text,
-        text: text
-      }
-    ],
-    ranges: [],
-    value: null
-  };
-  filterData.SourceHandlingUnit = SourceHandlingUnit;
-  oSmartFilterBar.setFilterData(filterData);
+
+                            let SourceHandlingUnit = {
+                                items: [{
+                                    key: text,
+                                    text: text
+                                }],
+                                ranges: [],
+                                value: null
+                            };
+                            filterData.SourceHandlingUnit = SourceHandlingUnit;
+                            oSmartFilterBar.setFilterData(filterData);
                             aFilterItems.forEach(function(filterItem) {
                                 if (filterItem.getName() === "SourceHandlingUnit") {
                                     filterItem.setVisibleInFilterBar(true);
@@ -559,6 +547,7 @@ let SourceHandlingUnit = {
                         default:
                             // Code to execute if no case matches
                     }
+                    sap.ui.getCore().byId("scm.ewm.picklistpapers1::sap.suite.ui.generic.template.ListReport.view.ListReport::WarehouseTaskSet--listReportFilter-btnGo").firePress();
                 };
 
                 // On failed validation, clear the field and search again
@@ -604,30 +593,7 @@ let SourceHandlingUnit = {
                 });
 
             }
-            // 	/**
-            // 	 * Similar to onAfterRendering, but this hook is invoked before the controller's View is re-rendered
-            // 	 * (NOT before the first rendering! onInit() is used for that one!).
-            // 	 * @memberOf customer.custom.scm.ewm.picklistpapers1.HeaderControllerExt
-            // 	 */
-            // 	onBeforeRendering: function() {
-            // 	},
-            // 	/**
-            // 	 * Called when the View has been rendered (so its HTML is part of the document). Post-rendering manipulations of the HTML could be done here.
-            // 	 * This hook is the same one that SAPUI5 controls get after being rendered.
-            // 	 * @memberOf customer.custom.scm.ewm.picklistpapers1.HeaderControllerExt
-            // 	 */
-            // 	onAfterRendering: function() {
-            // 	},
-            // 	/**
-            // 	 * Called when the Controller is destroyed. Use this one to free resources and finalize activities.
-            // 	 * @memberOf customer.custom.scm.ewm.picklistpapers1.HeaderControllerExt
-            // 	 */
-            // 	onExit: function() {
-            // 	},
-            // 	// override public method of the base controller
-            // 	basePublicMethod: function() {
-            // 	}
-            // }
+
         });
     }
 );

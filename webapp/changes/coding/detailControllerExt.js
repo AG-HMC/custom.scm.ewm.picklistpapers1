@@ -2,7 +2,10 @@ sap.ui.define(
     [
         'sap/ui/core/mvc/ControllerExtension',
         // ,'sap/ui/core/mvc/OverrideExecution'
-        "scm/ewm/picklistpapers1/modelHelper/Global", "scm/ewm/picklistpapers1/utils/util", "scm/ewm/picklistpapers1/service/ODataService", "sap/ndc/BarcodeScanner"
+        "scm/ewm/picklistpapers1/modelHelper/Global", 
+        "scm/ewm/picklistpapers1/utils/util", 
+        "scm/ewm/picklistpapers1/service/ODataService", 
+        "sap/ndc/BarcodeScanner"
     ],
     function(
         ControllerExtension
@@ -11,27 +14,27 @@ sap.ui.define(
     ) {
         'use strict';
         return ControllerExtension.extend("customer.custom.scm.ewm.picklistpapers1.detailControllerExt", {
+            // Triggered when the user presses the scan button for the destination bin
             onDestinationBinScanPress: function() {
                 var that = this;
-
+                // Launch barcode scanner
                 BarcodeScanner.scan(
                     function(oResult) {
                         if (!oResult.cancelled) {
-                            // Success: Handle the scanned text
-                            // sap.m.MessageToast.show("Scanned: " + oResult.text);
-                            // Example: Set scanned value to a field
-                            // that.byId("myInput").setValue(oResult.text);
+                            // Helper function to parse input text and get field based on prefix
                             function getFieldByAppIdentifier(inputText) {
                                 const appIdMap = {
-                                    "GTN": "PROD",
-                                    "00": "HU",
-                                    "Q04": "DST",
-                                    "Q05": "DSB",
-                                    "10": "BATCH"
+                                    "GTN": "PROD",  // Product
+                                    "00": "HU",     // Handling Unit
+                                    "Q04": "DST",   // Destination Storage Type
+                                    "Q05": "DSB",   // Destination Storage Bin
+                                    "10": "BATCH"   // Batch
                                 };
 
+                                // Sort keys to ensure longer prefixes are matched first
                                 const sortedKeys = Object.keys(appIdMap).sort((a, b) => b.length - a.length);
 
+                                 // To find a matching prefix
                                 for (const key of sortedKeys) {
                                     if (inputText.startsWith(key)) {
                                         return {
@@ -41,9 +44,11 @@ sap.ui.define(
                                     }
                                 }
 
-                                return null;
+                                return null; // Return null if no prefix matched
                             }
-                            var filtered = getFieldByAppIdentifier("Q05"+oResult.text);
+
+                            // Parse scanned text and call _updateBin with extracted value
+                            var filtered = getFieldByAppIdentifier("Q05" + oResult.text);
                             this._updateBin.bind(this)(filtered.value);
                         }
                     }.bind(this),
@@ -54,8 +59,9 @@ sap.ui.define(
                 );
 
             },
+            // Internal function to update the destination storage bin
             _updateBin: function(i) {
-                var w = Global.getWarehouseNumber();
+                var w = Global.getWarehouseNumber(); // Get current warehouse number
                 const url = window.location.href;
 
                 // Use regex to extract key-value pairs inside the OData parentheses
@@ -69,7 +75,7 @@ sap.ui.define(
                     params.forEach(param => {
                         const [key, rawValue] = param.split("=");
                         const value = rawValue?.replace(/^'|'$/g, ""); // remove single quotes
-
+                        // Assign values to relevant variables
                         if (key === "EWMWarehouseTask") {
                             EWMWarehouseTask = value;
                         }
@@ -79,16 +85,23 @@ sap.ui.define(
                     });
                 }
 
-                console.log("EWMWarehouseTask:", EWMWarehouseTask);
-                console.log("WarehouseTaskItem:", WarehouseTaskItem);
+                // console.log("EWMWarehouseTask:", EWMWarehouseTask);
+                // console.log("WarehouseTaskItem:", WarehouseTaskItem);
+
+                // Build path to OData property
                 const path = "/WarehouseTaskSet(EWMWarehouse='" + w + "',EWMWarehouseTask='" + EWMWarehouseTask + "',WarehouseTaskItem='" + WarehouseTaskItem + "')/DestinationStorageBin"
+                // Update the property and refresh the model
                 this.getView().getModel().setProperty(path, i);
                 this.getView().getModel().refresh(true);
+
+                // Get relevant UI elements
                 var n = this.getView().byId("dest-bin-input");
                 var R = this.getView().getModel("i18n").getResourceBundle().getText("removeDestinationHU");
                 var t = this.getView().byId("dest-hu-select");
                 var P = this.getView().byId('maintain-pick-hu-button');
                 this.getView().setBusy(true);
+
+                // Call service to get UI settings for the destination HU input
                 ODataService.getDestHUUIInfo(i, w).then(function(u) {
                         if (!u.GetDestHUUIInfo.isAllowedToEdit && t.getValue() !== "") {
                             M.warning(R, {
@@ -122,72 +135,6 @@ sap.ui.define(
             onDestinationBinInfoPress: function() {
                 sap.m.MessageToast.show("Not implemented");
             }
-            // metadata: {
-            // 	// extension can declare the public methods
-            // 	// in general methods that start with "_" are private
-            // 	methods: {
-            // 		publicMethod: {
-            // 			public: true /*default*/ ,
-            // 			final: false /*default*/ ,
-            // 			overrideExecution: OverrideExecution.Instead /*default*/
-            // 		},
-            // 		finalPublicMethod: {
-            // 			final: true
-            // 		},
-            // 		onMyHook: {
-            // 			public: true /*default*/ ,
-            // 			final: false /*default*/ ,
-            // 			overrideExecution: OverrideExecution.After
-            // 		},
-            // 		couldBePrivate: {
-            // 			public: false
-            // 		}
-            // 	}
-            // },
-            // // adding a private method, only accessible from this controller extension
-            // _privateMethod: function() {},
-            // // adding a public method, might be called from or overridden by other controller extensions as well
-            // publicMethod: function() {},
-            // // adding final public method, might be called from, but not overridden by other controller extensions as well
-            // finalPublicMethod: function() {},
-            // // adding a hook method, might be called by or overridden from other controller extensions
-            // // override these method does not replace the implementation, but executes after the original method
-            // onMyHook: function() {},
-            // // method public per default, but made private via metadata
-            // couldBePrivate: function() {},
-            // // this section allows to extend lifecycle hooks or override public methods of the base controller
-            // override: {
-            // 	/**
-            // 	 * Called when a controller is instantiated and its View controls (if available) are already created.
-            // 	 * Can be used to modify the View before it is displayed, to bind event handlers and do other one-time initialization.
-            // 	 * @memberOf customer.custom.scm.ewm.picklistpapers1.detailControllerExt
-            // 	 */
-            // 	onInit: function() {
-            // 	},
-            // 	/**
-            // 	 * Similar to onAfterRendering, but this hook is invoked before the controller's View is re-rendered
-            // 	 * (NOT before the first rendering! onInit() is used for that one!).
-            // 	 * @memberOf customer.custom.scm.ewm.picklistpapers1.detailControllerExt
-            // 	 */
-            // 	onBeforeRendering: function() {
-            // 	},
-            // 	/**
-            // 	 * Called when the View has been rendered (so its HTML is part of the document). Post-rendering manipulations of the HTML could be done here.
-            // 	 * This hook is the same one that SAPUI5 controls get after being rendered.
-            // 	 * @memberOf customer.custom.scm.ewm.picklistpapers1.detailControllerExt
-            // 	 */
-            // 	onAfterRendering: function() {
-            // 	},
-            // 	/**
-            // 	 * Called when the Controller is destroyed. Use this one to free resources and finalize activities.
-            // 	 * @memberOf customer.custom.scm.ewm.picklistpapers1.detailControllerExt
-            // 	 */
-            // 	onExit: function() {
-            // 	},
-            // 	// override public method of the base controller
-            // 	basePublicMethod: function() {
-            // 	}
-            // }
         });
     }
 );
