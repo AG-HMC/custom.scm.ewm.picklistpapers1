@@ -129,11 +129,73 @@ sap.ui.define(
                     }
                     .bind(this));
             },
-            onStorageBinInfoPress: function() {
-                sap.m.MessageToast.show("Not implemented");
+            onStorageBinInfoPress: function(oEvent) {
+                // sap.m.MessageToast.show("Not implemented");
+                if(!this._oPopover){
+                this._oPopover = new sap.m.Popover({
+                    placement: sap.m.PlacementType.Bottom,
+                    contentWidth: "200px",
+                    showHeader: false,
+                    content: new sap.m.Text({ id: "popoverText", text: "" }) // initially empty
+                });
+                this.getView().addDependent(this._oPopover);
+            }
+            this._fetchDesc(oEvent.getSource().getParent().getFields()[0].getText(), Global.getWarehouseNumber(),oEvent.getSource()).bind(this)();
             },
-            onDestinationBinInfoPress: function() {
-                sap.m.MessageToast.show("Not implemented");
+            onDestinationBinInfoPress: function(oEvent) {
+                if(!this._oPopover){
+                    // this._oPopover = new sap.m.Popover({
+                    //     placement: sap.m.PlacementType.Bottom,
+                    //     contentWidth: "200px",
+                    //     showHeader: false,
+                    //     content: new sap.m.Text({ id: "popoverText", text: "" }) // initially empty
+                    // });
+                    var oObjectStatus = new sap.m.ObjectStatus({
+                        id: "popoverText",
+                        inverted: true,
+                        active: true,
+                        state: "Indication07"
+                    });
+                    oObjectStatus.addStyleClass("sapUiSmallMarginBottom");
+                    var oVerticalLayout = new sap.ui.layout.VerticalLayout({
+                        width: "100%",
+                        content: [oObjectStatus]
+                    });
+                    oVerticalLayout.addStyleClass("sapUiContentPadding");
+                    this._oPopover = new sap.m.Popover({
+                        // placement: sap.m.PlacementType.Bottom,
+                        contentWidth: "auto",
+                        showHeader: false,
+                        content: oVerticalLayout
+                    });
+                    
+                    this.getView().addDependent(this._oPopover);
+                }
+                this._fetchDesc(oEvent.getSource().getParent().getFields()[0].getValue(), Global.getWarehouseNumber(),oEvent.getSource()).bind(this)();
+            },
+            _fetchDesc: function(bin, warehouse, source){
+                var url = "/sap/opu/odata/sap/ZSCM_BIN_DESC_SRV/ZSCM_C_StorageBin_Desc?$filter=Lgnum eq '"+warehouse+"' and Lgpla eq '"+bin+"'"
+
+                $.ajax({
+                    url: url,
+                    type: "GET",
+                    headers: {
+                        "Accept": "application/json" // Ensure JSON response
+                    },
+                    success: function(response, textStatus, jqXHR) {
+                        if (response.d.results.length > 0){
+                        sap.ui.getCore().byId("popoverText").setText(response.d.results[0].Lgobe);
+
+                        // Open the popover by the source control
+                        this._oPopover.openBy(source);
+                        }
+
+                    }.bind(this),
+                    error: function(oError, status, error) {
+                        
+                    }.bind(this)
+                });
+
             }
         });
     }
