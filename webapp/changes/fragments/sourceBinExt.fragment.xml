@@ -2,7 +2,7 @@
 <core:FragmentDefinition xmlns:core='sap.ui.core' xmlns='sap.m'>
     <!--  add your xml here -->
         <core:Icon id="storageBinInfo"
-			src="sap-icon://hint"
+			src="sap-icon://search"
 			press=".extension.customer.custom.scm.ewm.picklistpapers1.detailControllerExt.onStorageBinInfoPress"
 			class="size1"
 			width="15%"

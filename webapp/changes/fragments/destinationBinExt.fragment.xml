@@ -3,7 +3,7 @@
 <Button id="destinationBinScan" icon="sap-icon://bar-code"
 	press=".extension.customer.custom.scm.ewm.picklistpapers1.detailControllerExt.onDestinationBinScanPress" visible="{= ${TOSTAT_TEXT} === 'Open'}"></Button>
     <core:Icon id="destinationBinInfo"
-			src="sap-icon://hint"
+			src="sap-icon://search"
 			press=".extension.customer.custom.scm.ewm.picklistpapers1.detailControllerExt.onDestinationBinInfoPress"
 			class="size1"
 			width="15%"
